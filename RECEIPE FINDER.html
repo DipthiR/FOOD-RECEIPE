@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Worldwide Recipes</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #f9f9f9; }
+        #recipes { display: flex; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px;
+            width: 220px;
+            background: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        img { width: 100%; border-radius: 8px; }
+        h3 { font-size: 18px; }
+        a { display: inline-block; margin-top: 5px; color: blue; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h1>🌍 Worldwide Recipe Finder</h1>
+    <p id="count">Loading recipes...</p>
+    <div id="recipes"></div>
+
+    <script>
+        function loadAllRecipes() {
+            fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=`)
+                .then(res => res.json())
+                .then(data => {
+                    let recipeDiv = document.getElementById("recipes");
+                    let countDiv = document.getElementById("count");
+                    recipeDiv.innerHTML = "";
+
+                    if (data.meals) {
+                        countDiv.innerText = `Found ${data.meals.length} recipes worldwide`;
+                        data.meals.forEach(meal => {
+                            recipeDiv.innerHTML += `
+                                <div class="card">
+                                    <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
+                                    <h3>${meal.strMeal}</h3>
+                                    <p><b>Area:</b> ${meal.strArea}</p>
+                                    <a href="${meal.strSource || '#'}" target="_blank">View Full Recipe</a>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        countDiv.innerText = "No recipes found.";
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Error fetching recipes.");
+                });
+        }
+
+        loadAllRecipes();
+    </script>
+</body>
+</html>
